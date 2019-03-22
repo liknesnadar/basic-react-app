@@ -14,6 +14,7 @@ pipeline {
     booleanParam(name: 'NPM_RUN_TEST', defaultValue: true, description: '')
     booleanParam(name: 'PUSH_DOCKER_IMAGES', defaultValue: false, description: '')
     booleanParam(name: 'DOCKER_STACK_RM', defaultValue: false, description: 'Remove previous stack.  This is required if you have updated any secrets or configs as these cannot be updated. ')
+	booleanParam(name: 'DOCKER_LAST_IMAGE_RM', defaultValue: true, description: 'Removes docker image tag created in previous build'
   }
   stages {
     stage('npm install'){
@@ -40,10 +41,11 @@ pipeline {
       environment {
         COMMIT_TAG = sh(returnStdout: true, script: 'git rev-parse HEAD').trim().take(7)
         BUILD_IMAGE_REPO_TAG = "${params.IMAGE_REPO_NAME}:${env.BUILD_TAG}"
-	LAST_BUILD_TAG = "$BUILD_IMAGE_REPO_TAG":sh("readlink lastStableBuild")
+		LAST_STABLE_BUILD = sh(readlink lastStableBuild)
+		LAST_BUILD_TAG = "${params.IMAGE_REPO_NAME}:${env.BUILD_TAG}:$LAST_STABLE_BUILD"
       }
       steps{
-	sh "docker build . -t $BUILD_IMAGE_REPO_TAG"
+		sh "echo $LAST_BUILD_TAG"
         sh "docker build . -t $BUILD_IMAGE_REPO_TAG"
 //      sh "docker tag $BUILD_IMAGE_REPO_TAG ${params.IMAGE_REPO_NAME}:$COMMIT_TAG"
 //      sh "docker tag $BUILD_IMAGE_REPO_TAG ${params.IMAGE_REPO_NAME}:${readJSON(file: 'package.json').version}"
@@ -76,9 +78,7 @@ pipeline {
         }
       }
       steps{
-        sh "docker stack rm ${params.DOCKER_STACK_NAME}"
-	      
-		      
+        sh "docker stack rm ${params.DOCKER_STACK_NAME}"			
       }
     }
     stage('Docker Stack Deploy'){
