@@ -99,7 +99,7 @@ pipeline {
 		echo "######################################################"
 		echo "Executing >> docker rmi ${params.IMAGE_REPO_NAME}:$LAST_BUILD_TAG 2> /dev/null"
 		echo "######################################################"
-		sh "docker rmi ${params.IMAGE_REPO_NAME}:$LAST_BUILD_TAG 2> /dev/null"
+		sh "docker rmi ${params.IMAGE_REPO_NAME}:$LAST_BUILD_TAG 2> /dev/null || exit 0"
 	  }
 	}
   }
