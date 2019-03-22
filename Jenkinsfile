@@ -14,6 +14,7 @@ pipeline {
     booleanParam(name: 'NPM_RUN_TEST', defaultValue: true, description: '')
     booleanParam(name: 'PUSH_DOCKER_IMAGES', defaultValue: false, description: '')
     booleanParam(name: 'DOCKER_STACK_RM', defaultValue: false, description: 'Remove previous stack.  This is required if you have updated any secrets or configs as these cannot be updated. ')
+	booleanParam(name: 'DOCKER_LAST_IMAGE_RM', defaultValue: true, description: 'Removes docker image tag created in previous build')
   }
   stages {
     stage('npm install'){
@@ -40,11 +41,8 @@ pipeline {
       environment {
         COMMIT_TAG = sh(returnStdout: true, script: 'git rev-parse HEAD').trim().take(7)
         BUILD_IMAGE_REPO_TAG = "${params.IMAGE_REPO_NAME}:${env.BUILD_TAG}"
-	env_BUILD_TAG = "${env.BUILD_TAG}"
       }
       steps{
-	echo "env_BUILD_TAG = $env_BUILD_TAG"
-	echo "BUILD_IMAGE_REPO_TAG = $BUILD_IMAGE_REPO_TAG"
         sh "docker build . -t $BUILD_IMAGE_REPO_TAG"
 //      sh "docker tag $BUILD_IMAGE_REPO_TAG ${params.IMAGE_REPO_NAME}:$COMMIT_TAG"
 //      sh "docker tag $BUILD_IMAGE_REPO_TAG ${params.IMAGE_REPO_NAME}:${readJSON(file: 'package.json').version}"
@@ -85,6 +83,22 @@ pipeline {
         sh "docker stack deploy -c ${params.DOCKER_COMPOSE_FILENAME} ${params.DOCKER_STACK_NAME}"
       }
     }
+
+	stage('Remove last docker build image tag'){
+	  environment {
+		LAST_BUILD_TAG = "${params.IMAGE_REPO_NAME}:${env.BUILD_TAG}"
+	  }
+	  when{
+		expression {
+		  return params.DOCKER_LAST_IMAGE_RM
+		}
+	  }
+	  steps{
+		echo "LAST_BUILD_TAG = $LAST_BUILD_TAG"
+		echo "docker rmi ${params.IMAGE_REPO_NAME}:${env.BUILD_TAG}"
+		sh "docker rmi ${params.IMAGE_REPO_NAME}:${env.BUILD_TAG}"
+	  }
+	}
   }
   post {
     always {
