@@ -12,7 +12,7 @@ pipeline {
     string(name: 'DOCKER_COMPOSE_FILENAME', defaultValue: 'docker-compose.yml', description: '')
     string(name: 'DOCKER_STACK_NAME', defaultValue: 'react_stack', description: '')
     booleanParam(name: 'NPM_RUN_TEST', defaultValue: true, description: '')
-    booleanParam(name: 'PUSH_DOCKER_IMAGES', defaultValue: true, description: '')
+    booleanParam(name: 'PUSH_DOCKER_IMAGES', defaultValue: false, description: '')
     booleanParam(name: 'DOCKER_STACK_RM', defaultValue: false, description: 'Remove previous stack.  This is required if you have updated any secrets or configs as these cannot be updated. ')
   }
   stages {
@@ -43,10 +43,10 @@ pipeline {
       }
       steps{
         sh "docker build . -t $BUILD_IMAGE_REPO_TAG"
-        sh "docker tag $BUILD_IMAGE_REPO_TAG ${params.IMAGE_REPO_NAME}:$COMMIT_TAG"
-        sh "docker tag $BUILD_IMAGE_REPO_TAG ${params.IMAGE_REPO_NAME}:${readJSON(file: 'package.json').version}"
-        sh "docker tag $BUILD_IMAGE_REPO_TAG ${params.IMAGE_REPO_NAME}:${params.LATEST_BUILD_TAG}"
-        sh "docker tag $BUILD_IMAGE_REPO_TAG ${params.IMAGE_REPO_NAME}:$BRANCH_NAME-latest"
+//      sh "docker tag $BUILD_IMAGE_REPO_TAG ${params.IMAGE_REPO_NAME}:$COMMIT_TAG"
+//      sh "docker tag $BUILD_IMAGE_REPO_TAG ${params.IMAGE_REPO_NAME}:${readJSON(file: 'package.json').version}"
+//      sh "docker tag $BUILD_IMAGE_REPO_TAG ${params.IMAGE_REPO_NAME}:${params.LATEST_BUILD_TAG}"
+//      sh "docker tag $BUILD_IMAGE_REPO_TAG ${params.IMAGE_REPO_NAME}:$BRANCH_NAME-latest"
       }
     }
     stage('docker push'){
