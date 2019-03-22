@@ -96,7 +96,9 @@ pipeline {
 	  steps{
 		echo "LAST_BUILD_TAG = $LAST_BUILD_TAG"
 		echo "docker rmi ${params.IMAGE_REPO_NAME}:${env.BUILD_TAG}"
-		sh "docker rmi ${params.IMAGE_REPO_NAME}:${env.BUILD_TAG}"
+		echo "readlink = "
+		sh "readlink /var/jenkins_home/jobs/DJ_multibranch_pipeline_1/branches/master/builds/lastStableBuild"
+//		sh "docker rmi ${params.IMAGE_REPO_NAME}:${env.BUILD_TAG}"
 	  }
 	}
   }
