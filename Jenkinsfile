@@ -97,9 +97,9 @@ pipeline {
 	  }
 	  steps{
 		echo "######################################################"
-		echo "Executing >> docker rmi ${params.IMAGE_REPO_NAME}:$LAST_BUILD_TAG"
+		echo "Executing >> docker rmi ${params.IMAGE_REPO_NAME}:$LAST_BUILD_TAG 2> /dev/null"
 		echo "######################################################"
-		sh "docker rmi ${params.IMAGE_REPO_NAME}:$LAST_BUILD_TAG"
+		sh "docker rmi ${params.IMAGE_REPO_NAME}:$LAST_BUILD_TAG 2> /dev/null"
 	  }
 	}
   }
