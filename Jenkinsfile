@@ -19,22 +19,6 @@ pipeline {
   stages {
     stage('npm install'){
       steps{
-	  	echo "##################################################"
-		echo "BUILD_NUMBER :: $BUILD_NUMBER"
-		echo "BUILD_ID :: $BUILD_ID"
-		echo "BUILD_DISPLAY_NAME :: $BUILD_DISPLAY_NAME"
-		echo "JOB_NAME :: $JOB_NAME"
-		echo "JOB_BASE_NAME :: $JOB_BASE_NAME"
-		echo "BUILD_TAG :: $BUILD_TAG"
-		echo "EXECUTOR_NUMBER :: $EXECUTOR_NUMBER"
-		echo "NODE_NAME :: $NODE_NAME"
-		echo "NODE_LABELS :: $NODE_LABELS"
-		echo "WORKSPACE :: $WORKSPACE"
-		echo "JENKINS_HOME :: $JENKINS_HOME"
-		echo "JENKINS_URL :: $JENKINS_URL"
-		echo "BUILD_URL ::$BUILD_URL"
-		echo "JOB_URL :: $JOB_URL"
-		echo "##################################################"
          sh "npm install"
       }
     }
@@ -102,8 +86,8 @@ pipeline {
 
 	stage('Remove last docker build image tag'){
 	  environment {
-		LAST_BUILD_TAG = "${params.IMAGE_REPO_NAME}:${env.BUILD_TAG}"
 		LAST_BUILD_ID = sh(returnStdout: true, script: 'readlink /var/jenkins_home/jobs/DJ_multibranch_pipeline_1/branches/master/builds/lastStableBuild')
+		LAST_BUILD_TAG = "echo $BUILD_TAG | sed 's/[^-]*$//g'$LAST_BUILD_ID"
 	  }
 	  when{
 		expression {
@@ -111,9 +95,9 @@ pipeline {
 		}
 	  }
 	  steps{
-		echo "LAST_BUILD_TAG = $LAST_BUILD_TAG"
 		echo "LAST_BUILD_ID = $LAST_BUILD_ID"
-		echo "docker rmi ${params.IMAGE_REPO_NAME}:${env.BUILD_TAG}"
+		echo "LAST_BUILD_TAG = $LAST_BUILD_TAG"
+		echo "docker rmi ${params.IMAGE_REPO_NAME}:$LAST_BUILD_TAG"
 		echo "readlink = "
 		sh "readlink /var/jenkins_home/jobs/DJ_multibranch_pipeline_1/branches/master/builds/lastStableBuild"
 //		sh "docker rmi ${params.IMAGE_REPO_NAME}:${env.BUILD_TAG}"
