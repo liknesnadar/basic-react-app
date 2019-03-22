@@ -19,6 +19,8 @@ pipeline {
   stages {
     stage('npm install'){
       steps{
+		 echo "readlink lastStableBuild = "
+		 sh "readlink lastStableBuild"
          sh "npm install"
       }
     }
@@ -41,13 +43,13 @@ pipeline {
       environment {
         COMMIT_TAG = sh(returnStdout: true, script: 'git rev-parse HEAD').trim().take(7)
         BUILD_IMAGE_REPO_TAG = "${params.IMAGE_REPO_NAME}:${env.BUILD_TAG}"
-		LAST_STABLE_BUILD = sh(returnStdout: true, script: 'readlink lastStableBuild').trim().take(0)
-		LAST_STABLE_BUILD_1 = sh(returnStdout: true, script: 'readlink lastStableBuild').trim().take(1)
-		LAST_BUILD_TAG = "${params.IMAGE_REPO_NAME}:${env.BUILD_TAG}:$LAST_STABLE_BUILD"
+//		LAST_STABLE_BUILD = sh(returnStdout: true, script: 'readlink lastStableBuild').trim().take(0)
+//		LAST_STABLE_BUILD_1 = sh(returnStdout: true, script: 'readlink lastStableBuild').trim().take(1)
+//		LAST_BUILD_TAG = "${params.IMAGE_REPO_NAME}:${env.BUILD_TAG}:$LAST_STABLE_BUILD"
       }
       steps{
-		sh "echo LAST_BUILD_TAG = $LAST_BUILD_TAG"
-		sh "echo LAST_STABLE_BUILD_1 = $LAST_STABLE_BUILD_1"
+//		sh "echo LAST_BUILD_TAG = $LAST_BUILD_TAG"
+//		sh "echo LAST_STABLE_BUILD_1 = $LAST_STABLE_BUILD_1"
         sh "docker build . -t $BUILD_IMAGE_REPO_TAG"
 //      sh "docker tag $BUILD_IMAGE_REPO_TAG ${params.IMAGE_REPO_NAME}:$COMMIT_TAG"
 //      sh "docker tag $BUILD_IMAGE_REPO_TAG ${params.IMAGE_REPO_NAME}:${readJSON(file: 'package.json').version}"
