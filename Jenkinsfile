@@ -87,10 +87,10 @@ pipeline {
 	stage('Remove last docker build image tag'){
 	  environment {
 		LAST_BUILD_ID = sh(returnStdout: true, script: 'readlink /var/jenkins_home/jobs/DJ_multibranch_pipeline_1/branches/master/builds/lastStableBuild').trim()
-//		LAST_BUILD_TAG = ${env.BUILD_TAG} | sed 's/[^-]*\$//g'
+
 		L_BUILD_TAG = sh(returnStdout: true, script: "echo $BUILD_TAG | sed 's/-[^-]*\$//g'").trim()
-//		LAST_BUILD_TAG = "$L_BUILD_TAG-$LAST_BUILD_ID"
 		LAST_BUILD_TAG = "${L_BUILD_TAG}-${LAST_BUILD_ID}"
+		L_B_T = ${sh(returnStdout: true, script: "echo $BUILD_TAG | sed 's/-[^-]*\$//g'").trim() + "-${LAST_BUILD_ID}"}
 	  }
 	  when{
 		expression {
@@ -102,6 +102,7 @@ pipeline {
 		echo "LAST_BUILD_ID = $LAST_BUILD_ID"
 		echo "L_BUILD_TAG = $L_BUILD_TAG"
 		echo "LAST_BUILD_TAG = $LAST_BUILD_TAG"
+		echo "L_B_T = $L_B_T"
 		echo "docker rmi ${params.IMAGE_REPO_NAME}:$LAST_BUILD_TAG"
 		echo "######################################################"
 //		sh "docker rmi ${params.IMAGE_REPO_NAME}:${env.BUILD_TAG}"
