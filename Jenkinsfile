@@ -90,7 +90,7 @@ pipeline {
 
 		L_BUILD_TAG = sh(returnStdout: true, script: "echo $BUILD_TAG | sed 's/-[^-]*\$//g'").trim()
 		LAST_BUILD_TAG = "${L_BUILD_TAG}-${LAST_BUILD_ID}"
-		L_B_T = "${sh(returnStdout: true, script: "echo $BUILD_TAG | sed 's/-[^-]*\$//g'").trim() + '-' + ${LAST_BUILD_ID}}"
+		L_B_T = "${sh(returnStdout: true, script: "echo $BUILD_TAG | sed 's/-[^-]*\$//g'").trim() + '-$LAST_BUILD_ID'}"
 	  }
 	  when{
 		expression {
